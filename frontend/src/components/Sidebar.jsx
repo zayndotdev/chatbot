@@ -19,10 +19,21 @@ function Sidebar() {
   }, [fetchConversations]);
 
   // Handle creating new chat
+  // const handleNewChat = async () => {
+  //   await createConversation();
+  //   if (activeConversationId) {
+  //     navigate(`/chat/${activeConversationId}`);
+  //   }
+  // };
   const handleNewChat = async () => {
-    await createConversation();
-    if (activeConversationId) {
-      navigate(`/chat/${activeConversationId}`);
+    try {
+      const newConversation = await createConversation(); // get the created conversation
+      if (newConversation?._id) {
+        setActiveConversationId(newConversation._id); // update state
+        navigate(`/chat/${newConversation._id}`); // navigate immediately
+      }
+    } catch (error) {
+      console.error("Error creating new chat:", error);
     }
   };
 
@@ -32,7 +43,7 @@ function Sidebar() {
       <div className="p-4 border-b border-gray-700">
         <button
           onClick={handleNewChat}
-          className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg transition-colors w-full text-left"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 w-full cursor-pointer"
         >
           <Plus size={16} />
           New Chat

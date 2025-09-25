@@ -23,12 +23,13 @@ export function ChatProvider({ children }) {
       const result = await res.json();
       if (result.success && result.data) {
         setConversations((prev) => [result.data, ...prev]);
-        setActiveConversationId(result.data._id);
         setMessages([]);
+        return result.data; // return newly created conversation
       }
     } catch (error) {
       console.error("Error creating conversation:", error);
     }
+    return null;
   };
 
   // ChatContext.jsx

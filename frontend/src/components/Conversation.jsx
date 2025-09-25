@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ChatBox from "./ChatBox";
 import Message from "./Message";
@@ -15,17 +15,10 @@ function Conversation() {
     setMessages,
   } = useChat();
 
-  const messagesEndRef = useRef(null);
-
-  // Scroll to bottom whenever messages or aiLoading change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, aiLoading]);
-
   // Clear + Fetch messages when conversationId changes
   useEffect(() => {
     if (conversationId) {
-      setMessages([]); // clear old messages right away
+      setMessages([]);
       fetchMessages(conversationId);
     }
   }, [conversationId, fetchMessages, setMessages]);
@@ -43,7 +36,11 @@ function Conversation() {
             {messages.map((message) => (
               <Message key={message._id} message={message} />
             ))}
-
+            {/* {aiLoading && (
+              <p className="text-gray-400 italic">
+                🤖 Assistant is thinking...
+              </p>
+            )} */}
             {aiLoading && (
               <div className="flex items-center gap-3 bg-gray-800/50 backdrop-blur-md px-4 py-2 rounded-xl shadow-md max-w-xs animate-fadeIn">
                 {/* Spinning AI icon */}
@@ -53,9 +50,6 @@ function Conversation() {
                 </p>
               </div>
             )}
-
-            {/* Dummy div to scroll into view */}
-            <div ref={messagesEndRef} />
           </>
         )}
       </div>
