@@ -1,5 +1,5 @@
-import ChatBox from "./ChatBox";
-import Conversation from "./Conversation";
-import Message from "./Message";
-
-export { Conversation, Message, ChatBox };
+export { default as ChatBox } from "./ChatBox";
+export { default as Conversation } from "./Conversation";
+export { default as Message } from "./Message";
+export { default as Sidebar } from "./Sidebar";
+export { default as Layout } from "./Layout";

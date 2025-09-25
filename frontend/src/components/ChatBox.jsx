@@ -1,68 +1,40 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
 
-function ChatBox({ conversationId, onNewMessage }) {
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+function ChatBox({ onSend }) {
+  const [text, setText] = useState("");
 
-  const sendMessage = async () => {
-    if (!input.trim() || loading) return;
-    console.log(input);
-    setLoading(true);
-
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/chat/conversations/${conversationId}/messages`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text: input }),
-        }
-      );
-
-      const newMessage = await response.json();
-      onNewMessage(newMessage);
-      setInput("");
-    } catch (error) {
-      console.error("Error sending message:", error);
-      alert("Failed to send message");
-    } finally {
-      setLoading(false);
-    }
+  const handleSubmit = () => {
+    if (!text.trim()) return;
+    onSend(text.trim());
+    setText(""); // clear input
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      handleSubmit();
     }
   };
 
   return (
-    <div className="p-4 bg-gray-800 border-t border-gray-700">
-      <div className="flex gap-2 max-w-3xl mx-auto">
+    <div className="bg-gray-800 border-gray-700 px-4">
+      <div className="flex items-center max-w-4xl mx-auto w-full">
         <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
           placeholder="Type your message..."
-          className="flex-1 bg-gray-700 text-white p-3 rounded-lg resize-none"
+          className="flex-1 bg-gray-700 text-white px-5 py-3 rounded-s-full resize-none focus:outline-none shadow-sm"
           rows="1"
-          disabled={loading}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         <button
-          onClick={sendMessage}
-          disabled={loading}
-          className="bg-blue-600 hover:bg-blue-700 p-3 rounded-lg disabled:opacity-50"
+          onClick={handleSubmit}
+          className="flex items-center justify-center border-2 border-blue-600 hover:border-blue-700 bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-r-full transition-colors duration-200 shadow-sm cursor-pointer"
         >
-          <Send size={20} />
+          <Send size={20} className="text-white" />
         </button>
       </div>
-      {loading && (
-        <p className="text-center text-gray-400 mt-2">AI is typing...</p>
-      )}
     </div>
   );
 }

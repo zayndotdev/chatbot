@@ -1,39 +1,31 @@
-import { Conversation } from "../components";
-
-const chat = [
-  { role: "user", text: "Hi there!" },
-  { role: "assistant", text: "Hello! How can I help you today?" },
-  { role: "user", text: "Can you tell me a joke?" },
-  {
-    role: "assistant",
-    text: "Why don’t skeletons fight each other? Because they don’t have the guts.",
-  },
-  { role: "user", text: "Haha, that’s a good one." },
-  { role: "assistant", text: "Glad you liked it! Want to hear another?" },
-  { role: "user", text: "Yes, tell me another one." },
-  {
-    role: "assistant",
-    text: "Why did the computer go to the doctor? Because it caught a virus!",
-  },
-  { role: "user", text: "😂 That’s funny. Do you know a riddle?" },
-  {
-    role: "assistant",
-    text: "Sure! What has to be broken before you can use it?",
-  },
-  { role: "user", text: "Hmm… Is it an egg?" },
-  { role: "assistant", text: "Correct! 🎉 Nice job." },
-  { role: "user", text: "Cool! Can you give me a fun fact?" },
-  {
-    role: "assistant",
-    text: "Did you know? Honey never spoils. Archaeologists found 3,000-year-old honey in Egyptian tombs that was still edible!",
-  },
-  { role: "user", text: "Wow, that’s amazing!" },
-];
-
 function Home() {
   return (
-    <div>
-      <Conversation chat={chat} />
+    <div className="flex-1 flex flex-col items-center justify-center bg-gray-900 text-white">
+      <div className="text-center max-w-2xl mx-auto px-4">
+        <div className="text-6xl mb-6">🤖</div>
+        <h1 className="text-4xl font-bold mb-4">Welcome to ChatBot</h1>
+        <p className="text-gray-400 text-lg mb-8">
+          Start a new conversation or select an existing one from the sidebar to
+          begin chatting.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-lg mx-auto">
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <div className="text-2xl mb-2">💬</div>
+            <h3 className="font-semibold mb-2">Smart Responses</h3>
+            <p className="text-sm text-gray-400">AI-powered conversations</p>
+          </div>
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <div className="text-2xl mb-2">📚</div>
+            <h3 className="font-semibold mb-2">History</h3>
+            <p className="text-sm text-gray-400">Access your chat history</p>
+          </div>
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <div className="text-2xl mb-2">⚡</div>
+            <h3 className="font-semibold mb-2">Fast</h3>
+            <p className="text-sm text-gray-400">Quick and responsive</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

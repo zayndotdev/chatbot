@@ -5,14 +5,14 @@ function Message({ message }) {
 
   return (
     <div
-      className={`flex gap-3 max-w-3xl mx-auto ${
+      className={`flex gap-4 max-w-4xl mx-auto px-4 ${
         isUser ? "flex-row-reverse" : ""
       }`}
     >
       {/* Icon */}
       <div
-        className={`w-8 h-8 rounded-full flex items-center justify-center ${
-          isUser ? "bg-blue-500" : "bg-gray-600"
+        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+          isUser ? "bg-blue-500" : "bg-green-500"
         }`}
       >
         {isUser ? <User size={16} /> : <Bot size={16} />}
@@ -20,8 +20,10 @@ function Message({ message }) {
 
       {/* Message */}
       <div
-        className={`p-3 rounded-lg ${
-          isUser ? "bg-blue-600 text-white" : "bg-gray-700 text-white"
+        className={`max-w-xl p-4 rounded-lg ${
+          isUser
+            ? "bg-blue-600 text-white rounded-br-none"
+            : "bg-gray-700 text-white rounded-bl-none"
         }`}
       >
         {message.text}
