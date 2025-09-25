@@ -18,7 +18,7 @@ function ChatBox({ onSend }) {
   };
 
   return (
-    <div className="bg-gray-800 border-gray-700 px-4">
+    <div className="bg-transparent px-4">
       <div className="flex items-center max-w-4xl mx-auto w-full">
         <textarea
           placeholder="Type your message..."

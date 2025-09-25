@@ -1,44 +1,28 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { MessageSquare, Plus } from "lucide-react";
+import { useChat } from "../context/ChatContext";
 
 function Sidebar() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [chats, setChats] = useState([]);
+  const {
+    conversations,
+    fetchConversations,
+    createConversation,
+    activeConversationId,
+    setActiveConversationId,
+  } = useChat();
 
-  // Load conversations from backend when Sidebar mounts
+  // Load conversations when Sidebar mounts
   useEffect(() => {
-    fetch("http://localhost:3000/api/chat/conversations")
-      .then((res) => res.json())
-      .then((data) => {
-        // ✅ backend returns { success, data }
-        if (data.success && Array.isArray(data.data)) {
-          setChats(data.data);
-        } else {
-          setChats([]);
-        }
-      })
-      .catch((err) => console.error("Error fetching chats:", err));
-  }, []);
+    fetchConversations();
+  }, [fetchConversations]);
 
   // Handle creating new chat
   const handleNewChat = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/api/chat/conversations", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "New Chat" }),
-      });
-
-      const result = await res.json();
-      if (result.success && result.data) {
-        setChats((prev) => [result.data, ...prev]); // put new chat on top
-        navigate(`/chat/${result.data._id}`);
-      }
-    } catch (error) {
-      console.error("Error creating chat:", error);
+    await createConversation();
+    if (activeConversationId) {
+      navigate(`/chat/${activeConversationId}`);
     }
   };
 
@@ -57,13 +41,16 @@ function Sidebar() {
 
       {/* Dynamic Conversation List */}
       <div className="flex-1 overflow-y-auto">
-        {Array.isArray(chats) && chats.length > 0 ? (
-          chats.map((chat) => (
+        {conversations.length > 0 ? (
+          conversations.map((chat) => (
             <button
               key={chat._id}
-              onClick={() => navigate(`/chat/${chat._id}`)}
+              onClick={() => {
+                setActiveConversationId(chat._id);
+                navigate(`/chat/${chat._id}`);
+              }}
               className={`flex items-center gap-3 p-3 border-b border-gray-700 transition-colors w-full text-left ${
-                location.pathname === `/chat/${chat._id}`
+                activeConversationId === chat._id
                   ? "bg-gray-700"
                   : "hover:bg-gray-700"
               }`}

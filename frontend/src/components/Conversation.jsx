@@ -1,70 +1,40 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ChatBox from "./ChatBox";
 import Message from "./Message";
+import { useChat } from "../context/ChatContext";
 
 function Conversation() {
   const { conversationId } = useParams();
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [aiLoading, setAiLoading] = useState(false); // 👈 AI typing state
+  const {
+    messages,
+    fetchMessages,
+    aiLoading,
+    loadingMessages,
+    sendMessage,
+    setMessages,
+  } = useChat();
 
-  // ✅ Fetch messages when conversationId changes
+  const messagesEndRef = useRef(null);
+
+  // Scroll to bottom whenever messages or aiLoading change
   useEffect(() => {
-    async function fetchMessages() {
-      try {
-        const res = await fetch(
-          `http://localhost:3000/api/chat/conversations/${conversationId}/messages`
-        );
-        const data = await res.json();
-        if (data.success) setMessages(data.data);
-      } catch (error) {
-        console.error("Failed to fetch messages:", error);
-      } finally {
-        setLoading(false);
-      }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, aiLoading]);
+
+  // Clear + Fetch messages when conversationId changes
+  useEffect(() => {
+    if (conversationId) {
+      setMessages([]); // clear old messages right away
+      fetchMessages(conversationId);
     }
-    if (conversationId) fetchMessages();
-  }, [conversationId]);
-
-  // ✅ Handle sending a new message
-  const handleSendMessage = async (text) => {
-    // Show the user’s message immediately (optimistic update)
-    const tempMessage = {
-      _id: Date.now().toString(),
-      role: "user",
-      text,
-    };
-    setMessages((prev) => [...prev, tempMessage]);
-    setAiLoading(true); // 👈 show typing indicator
-
-    try {
-      const res = await fetch(
-        `http://localhost:3000/api/chat/conversations/${conversationId}/messages`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
-        }
-      );
-
-      const data = await res.json();
-      if (data.success) {
-        // Append assistant’s reply
-        setMessages((prev) => [...prev, data.data]);
-      }
-    } catch (error) {
-      console.error("Send message failed:", error);
-    } finally {
-      setAiLoading(false);
-    }
-  };
+  }, [conversationId, fetchMessages, setMessages]);
 
   return (
     <div className="flex-1 flex flex-col bg-gray-900 h-screen">
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
-        {loading ? (
+        {loadingMessages ? (
           <p className="text-gray-400 text-center">Loading...</p>
         ) : messages.length === 0 ? (
           <p className="text-gray-400 text-center">No messages yet.</p>
@@ -73,19 +43,27 @@ function Conversation() {
             {messages.map((message) => (
               <Message key={message._id} message={message} />
             ))}
+
             {aiLoading && (
-              <p className="text-gray-400 italic">
-                🤖 Assistant is thinking...
-              </p>
+              <div className="flex items-center gap-3 bg-gray-800/50 backdrop-blur-md px-4 py-2 rounded-xl shadow-md max-w-xs animate-fadeIn">
+                {/* Spinning AI icon */}
+                <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-gray-200 italic text-sm">
+                  Assistant is thinking...
+                </p>
+              </div>
             )}
+
+            {/* Dummy div to scroll into view */}
+            <div ref={messagesEndRef} />
           </>
         )}
       </div>
 
       {/* Chat input */}
-      <div className="border-t border-gray-700 bg-gray-800 p-4">
+      <div className="p-4">
         <div className="max-w-4xl mx-auto">
-          <ChatBox onSend={handleSendMessage} />
+          <ChatBox onSend={sendMessage} />
         </div>
       </div>
     </div>

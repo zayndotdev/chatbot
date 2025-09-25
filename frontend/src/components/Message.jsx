@@ -1,4 +1,6 @@
 import { User, Bot } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function Message({ message }) {
   const isUser = message.role === "user";
@@ -18,15 +20,17 @@ function Message({ message }) {
         {isUser ? <User size={16} /> : <Bot size={16} />}
       </div>
 
-      {/* Message */}
+      {/* Message bubble with markdown */}
       <div
-        className={`max-w-xl p-4 rounded-lg ${
+        className={`max-w-xl p-4 rounded-lg prose prose-invert ${
           isUser
             ? "bg-blue-600 text-white rounded-br-none"
             : "bg-gray-700 text-white rounded-bl-none"
         }`}
       >
-        {message.text}
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {message.text}
+        </ReactMarkdown>
       </div>
     </div>
   );
