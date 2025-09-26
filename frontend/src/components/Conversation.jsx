@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ChatBox from "./ChatBox";
 import Message from "./Message";
 import { useChat } from "../context/ChatContext";
 
 function Conversation() {
+  const navigate = useNavigate();
   const { conversationId } = useParams();
   const {
     messages,
@@ -15,13 +16,19 @@ function Conversation() {
     setMessages,
   } = useChat();
 
-  // Clear + Fetch messages when conversationId changes
   useEffect(() => {
-    if (conversationId) {
-      setMessages([]);
-      fetchMessages(conversationId);
-    }
-  }, [conversationId, fetchMessages, setMessages]);
+    const loadMessages = async () => {
+      if (conversationId) {
+        setMessages([]);
+        const result = await fetchMessages(conversationId); // ✅ wait for result
+        if (result === null) {
+          navigate("/");
+        }
+      }
+    };
+
+    loadMessages();
+  }, [conversationId, fetchMessages, setMessages, navigate]);
 
   return (
     <div className="flex-1 flex flex-col bg-gray-900 h-screen">
@@ -36,11 +43,7 @@ function Conversation() {
             {messages.map((message) => (
               <Message key={message._id} message={message} />
             ))}
-            {/* {aiLoading && (
-              <p className="text-gray-400 italic">
-                🤖 Assistant is thinking...
-              </p>
-            )} */}
+
             {aiLoading && (
               <div className="flex items-center gap-3 bg-gray-800/50 backdrop-blur-md px-4 py-2 rounded-xl shadow-md max-w-xs animate-fadeIn">
                 {/* Spinning AI icon */}

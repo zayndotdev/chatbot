@@ -97,6 +97,21 @@ async function sendMessage(req, res) {
     return handleError(res, "Failed to get AI response");
   }
 }
+// 🗂️ Get a specific conversation by ID
+async function getConversationById(req, res) {
+  try {
+    const conversation = await Conversation.findById(req.params.id);
+
+    if (!conversation) {
+      return handleError(res, "Conversation not found", 404);
+    }
+
+    return res.json({ success: true, data: conversation });
+  } catch (error) {
+    console.error("Get Conversation Error:", error);
+    return handleError(res);
+  }
+}
 
 // 🗑️ Delete a conversation + all its messages
 async function deleteConversation(req, res) {
@@ -111,6 +126,7 @@ async function deleteConversation(req, res) {
 
 module.exports = {
   getConversations,
+  getConversationById,
   createConversation,
   getMessages,
   sendMessage,

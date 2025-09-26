@@ -18,13 +18,6 @@ function Sidebar() {
     fetchConversations();
   }, [fetchConversations]);
 
-  // Handle creating new chat
-  // const handleNewChat = async () => {
-  //   await createConversation();
-  //   if (activeConversationId) {
-  //     navigate(`/chat/${activeConversationId}`);
-  //   }
-  // };
   const handleNewChat = async () => {
     try {
       const newConversation = await createConversation(); // get the created conversation
@@ -60,7 +53,7 @@ function Sidebar() {
                 setActiveConversationId(chat._id);
                 navigate(`/chat/${chat._id}`);
               }}
-              className={`flex items-center gap-3 p-3 border-b border-gray-700 transition-colors w-full text-left ${
+              className={`flex items-center gap-3 p-3 border-b border-gray-700 transition-colors w-full text-left cursor-pointer ${
                 activeConversationId === chat._id
                   ? "bg-gray-700"
                   : "hover:bg-gray-700"

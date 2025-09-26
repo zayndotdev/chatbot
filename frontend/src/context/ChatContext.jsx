@@ -24,10 +24,25 @@ export function ChatProvider({ children }) {
       if (result.success && result.data) {
         setConversations((prev) => [result.data, ...prev]);
         setMessages([]);
+        fetchConversationById(result.data._id);
         return result.data; // return newly created conversation
       }
     } catch (error) {
       console.error("Error creating conversation:", error);
+    }
+    return null;
+  };
+
+  const fetchConversationById = async (conversationId) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/chat/conversations/${conversationId}`
+      );
+      const data = await res.json();
+      if (data.success) return data.data;
+      return null;
+    } catch (err) {
+      console.error("Error fetching conversation by ID:", err);
     }
     return null;
   };
@@ -51,11 +66,23 @@ export function ChatProvider({ children }) {
     try {
       setLoadingMessages(true);
       setActiveConversationId(conversationId);
+
+      const conversation = await fetchConversationById(conversationId);
+      if (!conversation) {
+        console.error("Conversation not found");
+        return null;
+      }
+
       const res = await fetch(
         `http://localhost:3000/api/chat/conversations/${conversationId}/messages`
       );
       const data = await res.json();
-      if (data.success) setMessages(data.data);
+      if (data.success && data.data.length > 0) {
+        setMessages(data.data);
+      } else {
+        setMessages([]);
+        return;
+      }
     } catch (err) {
       console.error("Error fetching messages:", err);
     } finally {
@@ -110,6 +137,7 @@ export function ChatProvider({ children }) {
         sendMessage,
         createConversation,
         setMessages,
+        fetchConversationById,
       }}
     >
       {children}
