@@ -20,10 +20,10 @@ function Sidebar() {
 
   const handleNewChat = async () => {
     try {
-      const newConversation = await createConversation(); // get the created conversation
+      const newConversation = await createConversation();
       if (newConversation?._id) {
-        setActiveConversationId(newConversation._id); // update state
-        navigate(`/chat/${newConversation._id}`); // navigate immediately
+        setActiveConversationId(newConversation._id);
+        navigate(`/chat/${newConversation._id}`);
       }
     } catch (error) {
       console.error("Error creating new chat:", error);

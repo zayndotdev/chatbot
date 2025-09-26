@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ChatBox from "./ChatBox";
 import Message from "./Message";
@@ -16,19 +16,27 @@ function Conversation() {
     setMessages,
   } = useChat();
 
+  const messagesEndRef = useRef(null); // ✅ Ref for scrolling
+
   useEffect(() => {
     const loadMessages = async () => {
       if (conversationId) {
         setMessages([]);
-        const result = await fetchMessages(conversationId); // ✅ wait for result
+        const result = await fetchMessages(conversationId);
         if (result === null) {
           navigate("/");
         }
       }
     };
-
     loadMessages();
   }, [conversationId, fetchMessages, setMessages, navigate]);
+
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, aiLoading]);
 
   return (
     <div className="flex-1 flex flex-col bg-gray-900 h-screen">
@@ -46,13 +54,15 @@ function Conversation() {
 
             {aiLoading && (
               <div className="flex items-center gap-3 bg-gray-800/50 backdrop-blur-md px-4 py-2 rounded-xl shadow-md max-w-xs animate-fadeIn">
-                {/* Spinning AI icon */}
                 <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                 <p className="text-gray-200 italic text-sm">
                   Assistant is thinking...
                 </p>
               </div>
             )}
+
+            {/* Dummy div to scroll to */}
+            <div ref={messagesEndRef} />
           </>
         )}
       </div>
